@@ -22,18 +22,26 @@ router.post('/:id', async (req, res, next) => {
     const template = result.rows[0]
     const htmlCache = template.HTML_CACHE
 
+    if (!htmlCache) {
+      return res.status(400).json({ error: 'Template has no content. Open it in the builder and save it first.' })
+    }
+
+    if (format === 'html') {
+      const html = renderHtml(htmlCache, data)
+      await conn.execute(
+        `INSERT INTO report_renders (template_id, format, caller) VALUES (:1, :2, :3)`,
+        [template.ID, format, caller]
+      )
+      await conn.commit()
+      return res.type('html').send(html)
+    }
+
+    const pdf = await renderPdf(htmlCache, data)
     await conn.execute(
       `INSERT INTO report_renders (template_id, format, caller) VALUES (:1, :2, :3)`,
       [template.ID, format, caller]
     )
     await conn.commit()
-
-    if (format === 'html') {
-      const html = renderHtml(htmlCache, data)
-      return res.type('html').send(html)
-    }
-
-    const pdf = await renderPdf(htmlCache, data)
     res.type('application/pdf').send(pdf)
   } catch (err) { next(err) }
   finally { await conn.close() }

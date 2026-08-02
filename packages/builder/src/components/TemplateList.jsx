@@ -15,7 +15,7 @@ const styles = {
   newBtn: { margin: 12, padding: '8px 0', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 },
 }
 
-export default function TemplateList({ currentId, onSelect, onCreated }) {
+export default function TemplateList({ currentId, onSelect }) {
   const [templates, setTemplates] = useState([])
 
   async function load() {
@@ -31,7 +31,6 @@ export default function TemplateList({ currentId, onSelect, onCreated }) {
     const created = await createTemplate({ name, grapes_json: '{}', html_cache: '' })
     await load()
     onSelect({ id: created.id, name })
-    onCreated?.()
   }
 
   async function handleDelete(e, id) {

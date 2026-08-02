@@ -2,6 +2,7 @@
 const oracledb = require('oracledb')
 
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT
+oracledb.fetchAsString = [oracledb.CLOB]
 
 let pool
 
