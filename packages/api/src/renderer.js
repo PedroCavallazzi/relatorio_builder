@@ -10,9 +10,10 @@ function wrapHtml(body) {
 <style>
   * { box-sizing: border-box; }
   body { font-family: Arial, sans-serif; font-size: 12pt; margin: 0; padding: 0; }
-  @page { margin: 1cm; }
+  @page { size: A4 portrait; margin: 1cm; }
   table { border-collapse: collapse; width: 100%; }
   td, th { border: 1px solid #ddd; padding: 6px 8px; }
+  .page-break { page-break-before: always; }
 </style>
 </head>
 <body>${body}</body>

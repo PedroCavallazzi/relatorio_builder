@@ -26,6 +26,16 @@ const Editor = forwardRef(function Editor({ template }, ref) {
       fromElement: false,
       height: '100%',
       storageManager: false,
+      canvasCss: `
+        .gjs-cv-canvas__frames { background: #c8c8c8; }
+        .gjs-frame-wrapper {
+          width: 794px !important;
+          min-height: 1122px;
+          background: #fff;
+          box-shadow: 0 2px 12px rgba(0,0,0,.25);
+          margin: 24px auto;
+        }
+      `,
     })
     registerBlocks(editor)
     editorRef.current = editor
