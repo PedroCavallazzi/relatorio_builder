@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "migrate": "node src/migrate.js"
   },
   "dependencies": {
     "express": "^4.19.2",
