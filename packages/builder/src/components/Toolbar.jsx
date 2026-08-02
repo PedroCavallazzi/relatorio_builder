@@ -40,36 +40,88 @@ export default function Toolbar({ template, getEditorData, onSaved }) {
     }
   }
 
+  async function saveCurrentState() {
+    const data = getEditorData()
+    if (!data) return false
+    await updateTemplate(template.id, {
+      name,
+      grapes_json: data.grapes_json,
+      html_cache: data.html_cache,
+      data_query: dataQuery,
+    })
+    return true
+  }
+
+  async function fetchPreviewData() {
+    if (!dataQuery) return {}
+    try {
+      const res = await fetch('/api/data/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sql: dataQuery }),
+      })
+      const { rows } = await res.json()
+      return { rows }
+    } catch {
+      return {}
+    }
+  }
+
   async function handlePreview() {
     if (!template) return
     const win = window.open('', '_blank')
-    win.document.write('<p>Loading preview...</p>')
+    win.document.write('<p>Saving and loading preview...</p>')
     try {
-      let previewData = {}
-      if (dataQuery) {
-        try {
-          const qRes = await fetch('/api/data/query', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sql: dataQuery }),
-          })
-          const { rows } = await qRes.json()
-          previewData = { rows }
-        } catch {
-          // preview without data if SQL fails
-        }
-      }
+      setStatus('Saving...')
+      await saveCurrentState()
+      setStatus('')
+      const previewData = await fetchPreviewData()
       const res = await fetch(`/api/render/${template.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ format: 'html', data: previewData, caller: 'builder-preview' }),
       })
-      const html = await res.text()
+      const body = await res.text()
+      const shell = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: #c8c8c8; min-height: 100%; }
+  .a4-page {
+    width: 794px; min-height: 1122px;
+    background: #fff;
+    margin: 32px auto;
+    padding: 28px 28px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.3);
+    box-sizing: border-box;
+  }
+  @media print { html, body { background: none; } .a4-page { margin: 0; box-shadow: none; padding: 0; } }
+</style>
+</head><body><div class="a4-page">${body}</div></body></html>`
       win.document.open()
-      win.document.write(html)
+      win.document.write(shell)
       win.document.close()
     } catch {
       win.document.write('<p>Preview failed.</p>')
+    }
+  }
+
+  async function handlePreviewPdf() {
+    if (!template) return
+    try {
+      setStatus('Saving...')
+      await saveCurrentState()
+      setStatus('Generating PDF...')
+      const previewData = await fetchPreviewData()
+      const res = await fetch(`/api/render/${template.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ format: 'pdf', data: previewData, caller: 'builder-preview' }),
+      })
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+      setStatus('')
+    } catch {
+      setStatus('PDF preview failed')
     }
   }
 
@@ -85,6 +137,7 @@ export default function Toolbar({ template, getEditorData, onSaved }) {
       <input style={{ ...styles.input, flex: 1 }} value={dataQuery} onChange={e => setDataQuery(e.target.value)} placeholder="SELECT * FROM table WHERE id = :id" />
       <button style={styles.btn('#1a73e8')} onClick={handleSave}>Save</button>
       <button style={styles.btn('#34a853')} onClick={handlePreview}>Preview</button>
+      <button style={styles.btn('#e37400')} onClick={handlePreviewPdf}>Preview PDF</button>
       {status && <span style={styles.status}>{status}</span>}
     </div>
   )
