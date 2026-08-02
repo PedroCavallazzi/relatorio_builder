@@ -2,7 +2,7 @@ export function registerDataTable(editor) {
   editor.Blocks.add('data-table', {
     label: 'Data Table',
     category: 'Report',
-    content: `
+    content: `<div data-gjs-resizable='{"cr":1,"bc":1,"br":1}'>
 <table>
   <thead>
     <tr>
@@ -18,6 +18,7 @@ export function registerDataTable(editor) {
     </tr>
     {{/each}}
   </tbody>
-</table>`,
+</table>
+</div>`,
   })
 }
