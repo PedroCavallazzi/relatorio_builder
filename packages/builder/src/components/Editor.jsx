@@ -26,7 +26,6 @@ const Editor = forwardRef(function Editor({ template }, ref) {
       fromElement: false,
       height: '100%',
       storageManager: false,
-      panels: { defaults: [] },
     })
     registerBlocks(editor)
     editorRef.current = editor

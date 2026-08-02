@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatoolrio — Report Builder Guide</title>
+<style>
+  :root {
+    --navy:   #0f1c2e;
+    --navy2:  #162236;
+    --navy3:  #1e3050;
+    --amber:  #f5a623;
+    --amber2: #ffc55a;
+    --white:  #f0f4f9;
+    --muted:  #8da0b8;
+    --border: #243553;
+    --code-bg:#111e30;
+    --green:  #36c97e;
+    --red:    #e05c5c;
+    --blue:   #4da6ff;
+    --mono: "Consolas", "Courier New", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ─────────────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--navy2);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    font-size: 13px;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo svg { flex-shrink: 0; }
+
+  .sidebar-logo-text {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+
+  .sidebar-logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    padding: 6px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+
+  .sidebar nav a:hover,
+  .sidebar nav a.active {
+    color: var(--white);
+    border-left-color: var(--amber);
+  }
+
+  .sidebar-section-label {
+    padding: 16px 20px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--border);
+  }
+
+  /* ── Main ────────────────────────────────────────────── */
+  main {
+    max-width: 860px;
+    padding: 0 48px 80px;
+  }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero {
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 56px;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span { color: var(--amber); }
+
+  .hero-lead {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  /* ── Arch diagram ────────────────────────────────────── */
+  .arch-diagram {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    overflow-x: auto;
+  }
+
+  /* ── Section titles ──────────────────────────────────── */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    margin-top: 28px;
+  }
+
+  p { margin-bottom: 14px; color: #b8cde0; }
+
+  /* ── Cards ───────────────────────────────────────────── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .card {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Steps ───────────────────────────────────────────── */
+  .steps { counter-reset: step; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+    align-items: start;
+  }
+
+  .step-num {
+    counter-increment: step;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy3);
+    border: 2px solid var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .step-body h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding-top: 8px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Code blocks ─────────────────────────────────────── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 16px 0 24px;
+    color: #c9daf8;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: var(--amber2);
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .token-key    { color: #7ec8e3; }
+  .token-val    { color: #a8e6a3; }
+  .token-str    { color: #ffd280; }
+  .token-cmt    { color: #5a7a9a; font-style: italic; }
+  .token-kw     { color: #c792ea; }
+  .token-fn     { color: #82aaff; }
+
+  /* ── Table ───────────────────────────────────────────── */
+  .api-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0 24px;
+  }
+
+  .api-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--navy3);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .api-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: #b8cde0;
+    vertical-align: top;
+  }
+
+  .api-table tr:last-child td { border-bottom: none; }
+
+  .method {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    letter-spacing: .02em;
+  }
+  .method-get  { background: #1a3a1a; color: var(--green); }
+  .method-post { background: #1a2a3a; color: var(--blue);  }
+  .method-put  { background: #2a2a1a; color: #f5d342;      }
+  .method-del  { background: #3a1a1a; color: var(--red);   }
+
+  .path-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #c9daf8;
+  }
+
+  /* ── Block type illustration ─────────────────────────── */
+  .block-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .block-card {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .block-card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .block-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--navy3);
+    color: var(--amber);
+  }
+
+  .block-card-body { padding: 16px 18px; }
+
+  .block-preview {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #c9daf8;
+    margin-top: 12px;
+  }
+
+  /* ── UI diagram ──────────────────────────────────────── */
+  .ui-diagram {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+
+  .ui-diagram-bar {
+    background: var(--navy3);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: var(--red); }
+  .dot-amber { background: var(--amber); }
+  .dot-green { background: var(--green); }
+
+  .ui-diagram-content {
+    display: grid;
+    grid-template-columns: 160px 1fr 160px;
+    height: 320px;
+  }
+
+  .ui-panel {
+    border-right: 1px solid var(--border);
+    padding: 12px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+
+  .ui-panel:last-child { border-right: none; border-left: 1px solid var(--border); }
+
+  .ui-panel-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .ui-block-item {
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 10px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: default;
+  }
+
+  .ui-canvas {
+    background: #fff;
+    margin: 12px;
+    border-radius: 6px;
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .canvas-el {
+    background: #f0f4f9;
+    border: 1.5px dashed #b0c4de;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: #334;
+  }
+
+  .canvas-table {
+    font-size: 10px;
+    color: #334;
+    width: 100%;
+  }
+  .canvas-table th { background: #dde8f5; padding: 4px 6px; text-align: left; }
+  .canvas-table td { background: #eef3fa; padding: 3px 6px; border-top: 1px solid #cdd; }
+
+  .ui-prop-row {
+    margin-bottom: 10px;
+  }
+
+  .ui-prop-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .ui-prop-input {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 11px;
+    color: var(--white);
+    width: 100%;
+  }
+
+  .ui-toolbar {
+    grid-column: 1 / -1;
+    background: var(--navy3);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--amber);
+    color: #111;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+
+  .ui-input {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 10px;
+    color: var(--white);
+    font-size: 12px;
+    flex: 1;
+  }
+
+  /* ── Callout ─────────────────────────────────────────── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 20px 0;
+  }
+
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .callout p strong { color: var(--white); }
+
+  /* ── Tag ─────────────────────────────────────────────── */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--navy3);
+    color: var(--muted);
+    margin-right: 4px;
+  }
+
+  /* ── Flow diagram ────────────────────────────────────── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+
+  .flow-box {
+    flex-shrink: 0;
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .flow-box-icon { font-size: 22px; margin-bottom: 6px; }
+  .flow-box-label { font-size: 12px; font-weight: 600; }
+  .flow-box-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .flow-arrow {
+    flex-shrink: 0;
+    color: var(--amber);
+    font-size: 20px;
+    padding: 0 6px;
+  }
+
+  /* ── Env table ───────────────────────────────────────── */
+  .env-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 0;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 13px;
+    margin: 16px 0;
+  }
+
+  .env-key {
+    background: #162236;
+    padding: 9px 16px;
+    color: var(--blue);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .env-val {
+    background: var(--code-bg);
+    padding: 9px 16px;
+    color: #a8e6a3;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .env-key:last-of-type,
+  .env-val:last-of-type { border-bottom: none; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    main { padding: 0 20px 60px; }
+    .block-grid { grid-template-columns: 1fr; }
+    .ui-diagram-content { grid-template-columns: 1fr; height: auto; }
+    .ui-panel:last-child { border-left: none; border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#f5a623" fill-opacity=".15"/>
+        <rect x="5" y="7" width="18" height="2" rx="1" fill="#f5a623"/>
+        <rect x="5" y="12" width="12" height="2" rx="1" fill="#f5a623" fill-opacity=".7"/>
+        <rect x="5" y="17" width="15" height="2" rx="1" fill="#f5a623" fill-opacity=".5"/>
+        <circle cx="22" cy="21" r="4" fill="#f5a623"/>
+        <path d="M20.5 21l1 1 2-2" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="sidebar-logo-text">Relatoolrio</div>
+        <div class="sidebar-logo-sub">Report Builder</div>
+      </div>
+    </div>
+    <nav>
+      <div class="sidebar-section-label">Introduction</div>
+      <a href="#overview">Overview</a>
+      <a href="#architecture">Architecture</a>
+      <div class="sidebar-section-label">Setup</div>
+      <a href="#requirements">Requirements</a>
+      <a href="#install">Installation</a>
+      <a href="#database">Database Setup</a>
+      <div class="sidebar-section-label">Using the Builder</div>
+      <a href="#ui">Builder UI</a>
+      <a href="#blocks">Block Types</a>
+      <a href="#variables">Variables</a>
+      <a href="#preview">Preview &amp; Save</a>
+      <div class="sidebar-section-label">Integration</div>
+      <a href="#apex">Oracle APEX</a>
+      <a href="#render-flow">Render Flow</a>
+      <div class="sidebar-section-label">Reference</div>
+      <a href="#api">API Reference</a>
+      <a href="#data-model">Data Model</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Hero -->
+    <section class="hero" id="overview">
+      <div class="hero-eyebrow">Documentation · v1.0</div>
+      <h1>Replace iReport with a<br><span>modern report builder</span></h1>
+      <p class="hero-lead">
+        A drag-and-drop report designer and REST rendering API that Oracle APEX calls directly to produce PDF or HTML reports — no Java, no iReport.
+      </p>
+
+      <!-- Architecture SVG -->
+      <div class="arch-diagram">
+        <svg viewBox="0 0 760 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;display:block;margin:0 auto">
+
+          <!-- Oracle APEX -->
+          <rect x="10" y="50" width="130" height="80" rx="8" fill="#162236" stroke="#243553"/>
+          <text x="75" y="82" text-anchor="middle" font-family="system-ui" font-size="11" fill="#8da0b8">Oracle</text>
+          <text x="75" y="98" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="700" fill="#f0f4f9">APEX</text>
+          <text x="75" y="116" text-anchor="middle" font-family="system-ui" font-size="10" fill="#4da6ff">apex_web_service</text>
+
+          <!-- Arrow 1 -->
+          <path d="M142 90 L190 90" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr)"/>
+          <text x="166" y="82" text-anchor="middle" font-family="Consolas,monospace" font-size="9" fill="#5a7a9a">POST /api/render/:id</text>
+          <text x="166" y="104" text-anchor="middle" font-family="Consolas,monospace" font-size="9" fill="#5a7a9a">{ format, data }</text>
+
+          <!-- Node API box -->
+          <rect x="192" y="30" width="150" height="120" rx="8" fill="#1e3050" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="267" y="58" text-anchor="middle" font-family="system-ui" font-size="10" fill="#8da0b8">Node.js API</text>
+          <text x="267" y="76" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="700" fill="#f0f4f9">Express Server</text>
+          <!-- inner -->
+          <rect x="204" y="88" width="60" height="24" rx="4" fill="#162236"/>
+          <text x="234" y="104" text-anchor="middle" font-family="system-ui" font-size="10" fill="#82aaff">Handlebars</text>
+          <rect x="271" y="88" width="60" height="24" rx="4" fill="#162236"/>
+          <text x="301" y="104" text-anchor="middle" font-family="system-ui" font-size="10" fill="#82aaff">Puppeteer</text>
+          <text x="267" y="136" text-anchor="middle" font-family="system-ui" font-size="10" fill="#5a7a9a">:3000</text>
+
+          <!-- Arrow 2 — to Oracle DB -->
+          <path d="M267 150 L267 168 L490 168 L490 150" stroke="#243553" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+          <text x="378" y="180" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">template stored in Oracle DB</text>
+
+          <!-- Arrow 3 — to outputs -->
+          <path d="M344 68 L394 68" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr)"/>
+          <path d="M344 112 L394 112" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <!-- PDF output -->
+          <rect x="396" y="48" width="100" height="40" rx="7" fill="#162236" stroke="#243553"/>
+          <text x="446" y="70" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#e05c5c">PDF</text>
+          <text x="446" y="83" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">application/pdf</text>
+
+          <!-- HTML output -->
+          <rect x="396" y="94" width="100" height="40" rx="7" fill="#162236" stroke="#243553"/>
+          <text x="446" y="116" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#36c97e">HTML</text>
+          <text x="446" y="129" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">text/html</text>
+
+          <!-- Oracle DB -->
+          <rect x="430" y="30" width="130" height="80" rx="8" fill="#162236" stroke="#243553"/>
+          <!-- This gets placed correctly via transform — draw it separately -->
+
+          <!-- Oracle DB box correct -->
+          <rect x="565" y="35" width="120" height="110" rx="8" fill="#162236" stroke="#243553"/>
+          <text x="625" y="70" text-anchor="middle" font-family="system-ui" font-size="10" fill="#8da0b8">Oracle DB</text>
+          <text x="625" y="88" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#f0f4f9">Templates</text>
+          <text x="625" y="104" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">report_templates</text>
+          <text x="625" y="118" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">report_renders</text>
+
+          <!-- Builder browser -->
+          <rect x="565" y="155" width="120" height="14" rx="3" fill="#162236" stroke="#243553"/>
+          <text x="625" y="166" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">Builder UI · localhost:5173</text>
+
+          <!-- Arrow APEX → API return -->
+          <path d="M192 110 L142 110" stroke="#36c97e" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr3)"/>
+          <text x="166" y="122" text-anchor="middle" font-family="system-ui" font-size="9" fill="#5a7a9a">PDF / HTML</text>
+
+          <!-- Arrowhead markers -->
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#f5a623"/>
+            </marker>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#243553"/>
+            </marker>
+            <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L7,3 z" fill="#36c97e"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="section" id="architecture">
+      <div class="section-eyebrow">How it works</div>
+      <h2>Architecture</h2>
+      <p>
+        Relatoolrio is a single Node.js process with two packages in an npm workspaces monorepo.
+        The <strong>builder</strong> is a React SPA served as static files from the same process.
+        The <strong>API</strong> handles template storage, data querying, and report rendering.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon" style="background:#1a2e4a">🖌️</div>
+          <h4>packages/builder</h4>
+          <p>React + GrapesJS drag-and-drop designer. Runs only in the browser. Talks to the API at <code>/api/*</code>.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background:#1a2e4a">⚡</div>
+          <h4>packages/api</h4>
+          <p>Express server. Serves the built SPA, stores templates in Oracle, renders via Handlebars and Puppeteer.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background:#1a2e4a">🗄️</div>
+          <h4>Oracle DB</h4>
+          <p>Two tables: <code>report_templates</code> for template storage and <code>report_renders</code> for audit logging.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background:#1a2e4a">📄</div>
+          <h4>Puppeteer</h4>
+          <p>Headless Chromium shared browser instance. One page per render request, closed after each render.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Requirements -->
+    <section class="section" id="requirements">
+      <div class="section-eyebrow">Setup</div>
+      <h2>Requirements</h2>
+      <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px,1fr))">
+        <div class="card">
+          <div class="tag">Runtime</div>
+          <h4 style="margin-top:10px">Node.js 20+</h4>
+          <p>LTS recommended. Check with <code>node -v</code>.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Package manager</div>
+          <h4 style="margin-top:10px">npm 9+</h4>
+          <p>npm workspaces required. Ships with Node 20.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Database</div>
+          <h4 style="margin-top:10px">Oracle DB</h4>
+          <p>Any edition that supports <code>oracledb</code> 6. Instant Client needed on server.</p>
+        </div>
+        <div class="card">
+          <div class="tag">Browser</div>
+          <h4 style="margin-top:10px">Chromium</h4>
+          <p>Downloaded automatically by Puppeteer during <code>npm install</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation -->
+    <section class="section" id="install">
+      <h2>Installation</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Clone and install dependencies</h4>
+            <p>Run from the project root. npm workspaces will install both packages.</p>
+          </div>
+        </div>
+      </div>
+<pre><code>git clone &lt;repo-url&gt; relatoolrio
+cd relatoolrio
+npm install</code></pre>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Create your <code>.env</code> file</h4>
+            <p>Copy the example and fill in your Oracle credentials.</p>
+          </div>
+        </div>
+      </div>
+<pre><code>cp .env.example .env</code></pre>
+
+      <p>Edit <code>.env</code> with your values:</p>
+      <div class="env-grid">
+        <div class="env-key">PORT</div>           <div class="env-val">3000</div>
+        <div class="env-key">DB_USER</div>         <div class="env-val">reports_user</div>
+        <div class="env-key">DB_PASSWORD</div>     <div class="env-val">secret</div>
+        <div class="env-key">DB_CONNECT_STRING</div><div class="env-val">localhost/XEPDB1</div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Build the frontend</h4>
+            <p>Compiles the React SPA to <code>packages/builder/dist</code>, which the API serves at <code>/</code>.</p>
+          </div>
+        </div>
+      </div>
+<pre><code>npm run build --workspace=packages/builder</code></pre>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Start the server</h4>
+            <p>Starts the Express API. Open <code>http://localhost:3000</code> to use the builder.</p>
+          </div>
+        </div>
+      </div>
+<pre><code>npm start --workspace=packages/api</code></pre>
+
+      <div class="callout">
+        <div class="callout-icon">💡</div>
+        <p><strong>Development mode:</strong> Run <code>npm run dev --workspace=packages/builder</code> in a separate terminal for the Vite dev server with hot-reload at <code>http://localhost:5173</code>. The builder dev server proxies <code>/api/*</code> to <code>:3000</code>.</p>
+      </div>
+    </section>
+
+    <!-- Database -->
+    <section class="section" id="database">
+      <h2>Database Setup</h2>
+      <p>Run the migration script once as a DBA or a user with CREATE TABLE privileges:</p>
+<pre><code>-- packages/api/migrations/001_create_tables.sql
+
+CREATE TABLE report_templates (
+  id          NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name        VARCHAR2(200)  NOT NULL,
+  description VARCHAR2(1000),
+  grapes_json CLOB           NOT NULL,
+  html_cache  CLOB,
+  data_query  CLOB,
+  created_at  TIMESTAMP DEFAULT SYSTIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT SYSTIMESTAMP
+);
+
+CREATE TABLE report_renders (
+  id          NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  template_id NUMBER REFERENCES report_templates(id),
+  format      VARCHAR2(10),
+  rendered_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+  caller      VARCHAR2(200)
+);</code></pre>
+
+      <div class="callout">
+        <div class="callout-icon">⚠️</div>
+        <p><strong>CLOB columns:</strong> <code>grapes_json</code>, <code>html_cache</code>, and <code>data_query</code> are stored as CLOBs. The API uses <code>oracledb.fetchAsString = [oracledb.CLOB]</code> to read them as plain strings automatically.</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Builder UI -->
+    <section class="section" id="ui">
+      <div class="section-eyebrow">Using the Builder</div>
+      <h2>Builder UI</h2>
+      <p>The builder is a three-panel GrapesJS editor. The template list in the left sidebar lets you switch between reports.</p>
+
+      <!-- UI Diagram -->
+      <div class="ui-diagram">
+        <div class="ui-diagram-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-amber"></div>
+          <div class="dot dot-green"></div>
+          <span style="margin-left:8px;font-size:12px;color:var(--muted)">Report Builder — localhost:3000</span>
+        </div>
+        <div style="display:grid;grid-template-columns:160px 1fr 160px;height:280px">
+          <!-- Left: blocks + templates -->
+          <div class="ui-panel">
+            <div class="ui-panel-label">Templates</div>
+            <div class="ui-block-item" style="background:#1e3050;border-color:#f5a623">
+              <span>📄</span> Invoice Report
+            </div>
+            <div class="ui-block-item">
+              <span>📄</span> Sales Summary
+            </div>
+            <div class="ui-block-item">
+              <span>📄</span> Customer List
+            </div>
+            <div style="margin-top:16px">
+              <div class="ui-panel-label">Blocks</div>
+              <div class="ui-block-item"><span>T</span> TextField</div>
+              <div class="ui-block-item"><span>⊞</span> DataTable</div>
+              <div class="ui-block-item"><span>🖼</span> Image</div>
+              <div class="ui-block-item"><span>─</span> Page Break</div>
+            </div>
+          </div>
+          <!-- Center: canvas -->
+          <div style="background:#e8ecf0;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+            <div class="ui-panel-label" style="color:#667">Canvas</div>
+            <div style="background:white;border-radius:6px;padding:16px;flex:1;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+              <div style="font-size:11px;color:#334;font-weight:700;margin-bottom:8px;border-bottom:1px solid #dde;padding-bottom:6px">INVOICE #<span style="color:#c66">{{invoice_no}}</span></div>
+              <div style="font-size:10px;color:#667;margin-bottom:12px">Customer: <span style="color:#c66">{{customer_name}}</span></div>
+              <table style="width:100%;font-size:9px;border-collapse:collapse">
+                <thead><tr>
+                  <th style="background:#f0f4fa;padding:3px 5px;text-align:left">Description</th>
+                  <th style="background:#f0f4fa;padding:3px 5px;text-align:right">Qty</th>
+                  <th style="background:#f0f4fa;padding:3px 5px;text-align:right">Price</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="background:#fafbfc"><td style="padding:3px 5px;border-bottom:1px solid #eee;color:#c66">{{#each rows}}</td><td></td><td></td></tr>
+                  <tr><td style="padding:3px 5px;border-bottom:1px solid #eee">{{item}}</td><td style="text-align:right;padding:3px 5px;border-bottom:1px solid #eee">{{qty}}</td><td style="text-align:right;padding:3px 5px;border-bottom:1px solid #eee">{{price}}</td></tr>
+                  <tr style="background:#fafbfc"><td style="padding:3px 5px;color:#c66">{{/each}}</td><td></td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Right: properties -->
+          <div class="ui-panel" style="border-left:1px solid var(--border);border-right:none">
+            <div class="ui-panel-label">Properties</div>
+            <div class="ui-prop-row">
+              <div class="ui-prop-label">Variable name</div>
+              <div class="ui-prop-input">invoice_no</div>
+            </div>
+            <div class="ui-prop-row">
+              <div class="ui-prop-label">Font size</div>
+              <div class="ui-prop-input">14px</div>
+            </div>
+            <div class="ui-prop-row">
+              <div class="ui-prop-label">Font weight</div>
+              <div class="ui-prop-input">700</div>
+            </div>
+            <div class="ui-prop-row">
+              <div class="ui-prop-label">Color</div>
+              <div class="ui-prop-input">#333333</div>
+            </div>
+          </div>
+        </div>
+        <!-- Toolbar -->
+        <div class="ui-toolbar" style="border-top:1px solid var(--border);background:var(--navy3)">
+          <span style="font-weight:600;font-size:13px">Invoice Report</span>
+          <span style="color:var(--muted);font-size:12px">SELECT * FROM invoices WHERE id = :id</span>
+          <span style="flex:1"></span>
+          <span style="background:#1e3050;border:1px solid var(--border);border-radius:5px;padding:5px 12px;font-size:12px;cursor:pointer">👁 Preview</span>
+          <span style="background:var(--amber);color:#111;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer">💾 Save</span>
+        </div>
+      </div>
+
+      <h3>Panels</h3>
+      <table class="api-table">
+        <thead><tr><th>Panel</th><th>Location</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Template List</strong></td><td>Left sidebar — top</td><td>Create, rename, delete, and switch between report templates.</td></tr>
+          <tr><td><strong>Block Palette</strong></td><td>Left sidebar — bottom</td><td>Drag blocks onto the canvas: TextField, DataTable, ReportImage, PageBreak.</td></tr>
+          <tr><td><strong>Canvas</strong></td><td>Center</td><td>The visual editor. Drag to reorder, click to select and resize elements.</td></tr>
+          <tr><td><strong>Properties</strong></td><td>Right</td><td>Edit properties of the selected element: variable name, styles, table columns.</td></tr>
+          <tr><td><strong>Toolbar</strong></td><td>Bottom</td><td>Template name, default SQL query for preview, Preview and Save buttons.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Blocks -->
+    <section class="section" id="blocks">
+      <h2>Block Types</h2>
+      <p>Drag any of these four blocks from the palette onto the canvas. All support Handlebars variable binding.</p>
+
+      <div class="block-grid">
+        <div class="block-card">
+          <div class="block-card-header">
+            <span style="font-size:20px">T</span>
+            <div>
+              <div style="font-weight:600;font-size:14px">TextField</div>
+              <div class="block-badge">text</div>
+            </div>
+          </div>
+          <div class="block-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Renders a single variable as inline text. Set the variable name in the Properties panel.</p>
+            <div class="block-preview"><span style="color:#7ec8e3">&lt;span&gt;</span><span style="color:#ffd280">{{customer_name}}</span><span style="color:#7ec8e3">&lt;/span&gt;</span></div>
+          </div>
+        </div>
+
+        <div class="block-card">
+          <div class="block-card-header">
+            <span style="font-size:20px">⊞</span>
+            <div>
+              <div style="font-weight:600;font-size:14px">DataTable</div>
+              <div class="block-badge">table</div>
+            </div>
+          </div>
+          <div class="block-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Repeating table rows from the <code>rows</code> array in the request data. Add/remove columns in the Properties panel.</p>
+            <div class="block-preview"><span style="color:#c792ea">{{#each rows}}</span>
+<span style="color:#7ec8e3">&lt;tr&gt;&lt;td&gt;</span><span style="color:#ffd280">{{col1}}</span><span style="color:#7ec8e3">&lt;/td&gt;&lt;/tr&gt;</span>
+<span style="color:#c792ea">{{/each}}</span></div>
+          </div>
+        </div>
+
+        <div class="block-card">
+          <div class="block-card-header">
+            <span style="font-size:20px">🖼</span>
+            <div>
+              <div style="font-weight:600;font-size:14px">ReportImage</div>
+              <div class="block-badge">image</div>
+            </div>
+          </div>
+          <div class="block-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Renders an image whose URL comes from a variable. Useful for logos or charts passed as data URLs.</p>
+            <div class="block-preview"><span style="color:#7ec8e3">&lt;img </span><span style="color:#82aaff">src</span><span style="color:#7ec8e3">=</span><span style="color:#ffd280">"{{image_url}}"</span><span style="color:#7ec8e3">&gt;</span></div>
+          </div>
+        </div>
+
+        <div class="block-card">
+          <div class="block-card-header">
+            <span style="font-size:20px">─</span>
+            <div>
+              <div style="font-weight:600;font-size:14px">PageBreak</div>
+              <div class="block-badge">layout</div>
+            </div>
+          </div>
+          <div class="block-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Forces a page break at this point in the PDF. Has no visual effect in HTML output.</p>
+            <div class="block-preview"><span style="color:#7ec8e3">&lt;div </span><span style="color:#82aaff">style</span><span style="color:#7ec8e3">=</span><span style="color:#ffd280">"page-break-before:always"</span><span style="color:#7ec8e3">&gt;&lt;/div&gt;</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Variables -->
+    <section class="section" id="variables">
+      <h2>Variables &amp; Data Binding</h2>
+      <p>
+        Templates use <strong>Handlebars.js</strong> syntax. At render time, the data sent in the API request body is injected into the template.
+      </p>
+      <table class="api-table">
+        <thead><tr><th>Syntax</th><th>Produces</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>{{variable}}</code></td><td>Single value interpolation</td><td><code>{{customer_name}}</code> → <em>ACME Corp</em></td></tr>
+          <tr><td><code>{{#each rows}}…{{/each}}</code></td><td>Repeat for each object in <code>rows</code> array</td><td>One table row per query result row</td></tr>
+          <tr><td><code>{{image_url}}</code></td><td>URL string for <code>&lt;img src&gt;</code></td><td>Logo passed as base64 data URL</td></tr>
+        </tbody>
+      </table>
+
+      <p>The data object shape APEX should send:</p>
+<pre><code>{
+  <span class="token-str">"format"</span>: <span class="token-val">"pdf"</span>,
+  <span class="token-str">"data"</span>: {
+    <span class="token-cmt">// top-level scalars → {{variable_name}} in template</span>
+    <span class="token-str">"customer_name"</span>: <span class="token-val">"ACME Corp"</span>,
+    <span class="token-str">"invoice_no"</span>:    <span class="token-val">"INV-2026-001"</span>,
+
+    <span class="token-cmt">// rows array → {{#each rows}} in DataTable</span>
+    <span class="token-str">"rows"</span>: [
+      { <span class="token-str">"item"</span>: <span class="token-val">"Widget A"</span>, <span class="token-str">"qty"</span>: <span class="token-val">10</span>, <span class="token-str">"price"</span>: <span class="token-val">"100.00"</span> },
+      { <span class="token-str">"item"</span>: <span class="token-val">"Widget B"</span>, <span class="token-str">"qty"</span>: <span class="token-val">2</span>,  <span class="token-str">"price"</span>: <span class="token-val">"250.00"</span> }
+    ]
+  }
+}</code></pre>
+    </section>
+
+    <!-- Preview & Save -->
+    <section class="section" id="preview">
+      <h2>Preview &amp; Save</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Enter a default SQL query in the Toolbar</h4>
+            <p>This query runs only in the builder preview. APEX bypasses it and sends its own data at render time. Example: <code>SELECT * FROM customers WHERE rownum &lt; 5</code></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Click Preview</h4>
+            <p>The builder posts your SQL to <code>POST /api/data/query</code>, fetches a sample data set, then renders the current template as HTML in a popup iframe so you can see real data.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Click Save</h4>
+            <p>Serialises the GrapesJS canvas to JSON (stored in <code>grapes_json</code>) and also generates an <code>html_cache</code> string. Both are persisted to <code>report_templates</code> in Oracle.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-icon">⚠️</div>
+        <p><strong>Save before calling APEX:</strong> The render endpoint reads <code>html_cache</code>. A template that has never been saved — or was created but never designed — will return a <strong>400 error</strong>. Always save after making changes.</p>
+      </div>
+    </section>
+
+    <hr>
+
+    <!-- Oracle APEX Integration -->
+    <section class="section" id="apex">
+      <div class="section-eyebrow">Integration</div>
+      <h2>Oracle APEX Integration</h2>
+      <p>
+        APEX calls the render endpoint via <code>apex_web_service.make_rest_request</code>. The template id appears in the URL; the format and data go in the request body as JSON.
+      </p>
+
+      <h3>Render a PDF and download it</h3>
+<pre><code><span class="token-kw">DECLARE</span>
+  l_url      VARCHAR2(200) := <span class="token-val">'http://report-server:3000/api/render/42'</span>;
+  l_body     CLOB;
+  l_response BLOB;
+<span class="token-kw">BEGIN</span>
+  <span class="token-cmt">-- Build JSON with your query results</span>
+  l_body := <span class="token-val">'{'</span>
+    || <span class="token-val">'"format":"pdf",'</span>
+    || <span class="token-val">'"data":{'</span>
+    ||   <span class="token-val">'"customer_name":"'</span> || :P1_CUSTOMER || <span class="token-val">'",'</span>
+    ||   <span class="token-val">'"invoice_no":"'</span>    || :P1_INVOICE_NO || <span class="token-val">'",'</span>
+    ||   <span class="token-val">'"rows":[]'</span>   <span class="token-cmt">-- or build from a cursor loop</span>
+    || <span class="token-val">'}}'</span>;
+
+  apex_web_service.set_request_headers(
+    p_name_01  => <span class="token-val">'Content-Type'</span>,
+    p_value_01 => <span class="token-val">'application/json'</span>
+  );
+
+  l_response := apex_web_service.make_rest_request_b(
+    p_url         => l_url,
+    p_http_method => <span class="token-val">'POST'</span>,
+    p_body        => l_body
+  );
+
+  <span class="token-cmt">-- Trigger browser download</span>
+  sys.htp.init;
+  owa_util.mime_header(<span class="token-val">'application/pdf'</span>, FALSE);
+  htp.p(<span class="token-val">'Content-Disposition: attachment; filename="invoice.pdf"'</span>);
+  owa_util.http_header_close;
+  wpg_docload.download_file(l_response);
+  apex_application.stop_apex_engine;
+<span class="token-kw">END</span>;</code></pre>
+
+      <h3>Render HTML inline</h3>
+<pre><code><span class="token-kw">DECLARE</span>
+  l_response CLOB;
+<span class="token-kw">BEGIN</span>
+  apex_web_service.set_request_headers(
+    p_name_01  => <span class="token-val">'Content-Type'</span>,
+    p_value_01 => <span class="token-val">'application/json'</span>
+  );
+
+  l_response := apex_web_service.make_rest_request(
+    p_url         => <span class="token-val">'http://report-server:3000/api/render/42'</span>,
+    p_http_method => <span class="token-val">'POST'</span>,
+    p_body        => <span class="token-val">'{"format":"html","data":{"name":"World","rows":[]}}'</span>
+  );
+
+  <span class="token-cmt">-- l_response now contains the rendered HTML string</span>
+  htp.p(l_response);
+<span class="token-kw">END</span>;</code></pre>
+
+      <div class="callout">
+        <div class="callout-icon">💡</div>
+        <p><strong>Replace <code>make_rest_request</code> with <code>make_rest_request_b</code></strong> when the response is a PDF (binary). For HTML responses, <code>make_rest_request</code> (CLOB) is fine.</p>
+      </div>
+    </section>
+
+    <!-- Render Flow -->
+    <section class="section" id="render-flow">
+      <h2>Render Flow</h2>
+      <p>What happens inside the API when APEX calls <code>POST /api/render/:id</code>:</p>
+
+      <div class="flow-row">
+        <div class="flow-box">
+          <div class="flow-box-icon">🔍</div>
+          <div class="flow-box-label">Load template</div>
+          <div class="flow-box-sub">from Oracle by id</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">
+          <div class="flow-box-icon">🔧</div>
+          <div class="flow-box-label">Compile</div>
+          <div class="flow-box-sub">Handlebars + data</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--amber)">
+          <div class="flow-box-icon">📄</div>
+          <div class="flow-box-label">format=html?</div>
+          <div class="flow-box-sub">return HTML string</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--red)">
+          <div class="flow-box-icon">🖨️</div>
+          <div class="flow-box-label">format=pdf?</div>
+          <div class="flow-box-sub">Puppeteer → buffer</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">
+          <div class="flow-box-icon">📝</div>
+          <div class="flow-box-label">Audit log</div>
+          <div class="flow-box-sub">report_renders</div>
+        </div>
+      </div>
+
+      <table class="api-table" style="margin-top:8px">
+        <thead><tr><th>Format</th><th>Engine</th><th>Typical latency</th><th>Content-Type</th></tr></thead>
+        <tbody>
+          <tr><td>html</td><td>Handlebars compile + string return</td><td>&lt; 20 ms</td><td><code>text/html</code></td></tr>
+          <tr><td>pdf (simple)</td><td>Puppeteer headless Chromium</td><td>300 – 600 ms</td><td><code>application/pdf</code></td></tr>
+          <tr><td>pdf (complex)</td><td>Puppeteer headless Chromium</td><td>1 – 2 s</td><td><code>application/pdf</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr>
+
+    <!-- API Reference -->
+    <section class="section" id="api">
+      <div class="section-eyebrow">Reference</div>
+      <h2>API Reference</h2>
+      <p>All endpoints are served at the same host as the builder UI. Base URL: <code>http://&lt;server&gt;:3000</code>.</p>
+
+      <h3>Templates</h3>
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td class="path-code">/api/templates</td>
+            <td>List all templates. Returns <code>id</code>, <code>name</code>, <code>description</code>, <code>updated_at</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td class="path-code">/api/templates/:id</td>
+            <td>Full template including <code>grapes_json</code> and <code>data_query</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="method method-post">POST</span></td>
+            <td class="path-code">/api/templates</td>
+            <td>Create. Body: <code>{ name, description, grapes_json, html_cache, data_query }</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="method method-put">PUT</span></td>
+            <td class="path-code">/api/templates/:id</td>
+            <td>Update. Same body as POST.</td>
+          </tr>
+          <tr>
+            <td><span class="method method-del">DELETE</span></td>
+            <td class="path-code">/api/templates/:id</td>
+            <td>Delete template and all its audit rows.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Data (builder preview)</h3>
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-post">POST</span></td>
+            <td class="path-code">/api/data/query</td>
+            <td>Run a SQL query and return rows as JSON. Body: <code>{ sql }</code>. Used by the builder Preview button only.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Render (called by Oracle APEX)</h3>
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-post">POST</span></td>
+            <td class="path-code">/api/render/:id</td>
+            <td>
+              Render template <code>:id</code> with the provided data.<br>
+              Body: <code>{ format: "pdf"|"html", data: { ...vars, rows: [...] } }</code><br>
+              Response: PDF binary or HTML string.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Health</h3>
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="method method-get">GET</span></td>
+            <td class="path-code">/api/health</td>
+            <td>Returns <code>{ status: "ok" }</code>. Use for load-balancer health checks.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Data Model -->
+    <section class="section" id="data-model">
+      <h2>Data Model</h2>
+
+      <h3>report_templates</h3>
+      <table class="api-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>NUMBER</td><td>Auto-generated primary key.</td></tr>
+          <tr><td><code>name</code></td><td>VARCHAR2(200)</td><td>Display name shown in the template list.</td></tr>
+          <tr><td><code>description</code></td><td>VARCHAR2(1000)</td><td>Optional free-text description.</td></tr>
+          <tr><td><code>grapes_json</code></td><td>CLOB</td><td>Full GrapesJS project JSON. The source of truth for the designer canvas.</td></tr>
+          <tr><td><code>html_cache</code></td><td>CLOB</td><td>Pre-compiled HTML+CSS string. Read by the render endpoint — must be non-empty before calling APEX.</td></tr>
+          <tr><td><code>data_query</code></td><td>CLOB</td><td>Default SQL for the builder preview. APEX ignores this and sends its own data.</td></tr>
+          <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Set on INSERT.</td></tr>
+          <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Set on INSERT and UPDATE.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>report_renders</h3>
+      <table class="api-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>NUMBER</td><td>Auto-generated primary key.</td></tr>
+          <tr><td><code>template_id</code></td><td>NUMBER</td><td>FK → <code>report_templates.id</code>.</td></tr>
+          <tr><td><code>format</code></td><td>VARCHAR2(10)</td><td><code>pdf</code> or <code>html</code>.</td></tr>
+          <tr><td><code>rendered_at</code></td><td>TIMESTAMP</td><td>When the render completed.</td></tr>
+          <tr><td><code>caller</code></td><td>VARCHAR2(200)</td><td>IP address of the caller (for audit).</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-icon">📌</div>
+        <p><strong>Out of scope (can be added later):</strong> user authentication, Excel/XLSX output, chart blocks, report scheduling, and email delivery. The current API has no authentication — it is intended for internal-network use only.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active sidebar link on scroll
+  const links = document.querySelectorAll('.sidebar nav a')
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean)
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'))
+        const active = [...links].find(l => l.getAttribute('href') === '#' + e.target.id)
+        if (active) active.classList.add('active')
+      }
+    })
+  }, { rootMargin: '-20% 0px -70% 0px' })
+  sections.forEach(s => obs.observe(s))
+</script>
+</body>
+</html>
