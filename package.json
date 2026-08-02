@@ -1,0 +1,16 @@
+{
+  "name": "relatoolrio",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/api",
+    "packages/builder"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=packages/api",
+    "dev:builder": "npm run dev --workspace=packages/builder",
+    "build": "npm run build --workspace=packages/builder",
+    "start": "npm run start --workspace=packages/api",
+    "test": "npm run test --workspace=packages/api"
+  }
+}
