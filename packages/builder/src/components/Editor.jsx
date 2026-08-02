@@ -35,6 +35,24 @@ const Editor = forwardRef(function Editor({ template }, ref) {
           box-shadow: 0 2px 12px rgba(0,0,0,.25);
           margin: 24px auto;
         }
+        .gjs-row {
+          outline: 1px dashed #cfd8dc;
+          outline-offset: -1px;
+        }
+        .gjs-col {
+          outline: 1px dashed #90a4ae;
+          outline-offset: -1px;
+        }
+        .gjs-col:empty::after {
+          content: 'Drop here';
+          display: block;
+          text-align: center;
+          padding-top: 18px;
+          color: #b0bec5;
+          font-size: 11px;
+          font-family: sans-serif;
+          pointer-events: none;
+        }
       `,
     })
     registerBlocks(editor)
